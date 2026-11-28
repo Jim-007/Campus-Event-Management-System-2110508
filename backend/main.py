@@ -605,7 +605,7 @@ def seed_demo_data(db: Session = Depends(get_session)):
 
     demo_password = hash_password("Campus@2026")
 
-    admin1 = User(email="admin1@campus.edu", full_name="Dr. Sayef Admin", password_hash=demo_password, role=ROLE_ADMIN)
+    admin1 = User(email="admin1@campus.edu", full_name="CITS Admin", password_hash=demo_password, role=ROLE_ADMIN)
     admin2 = User(email="admin2@campus.edu", full_name="System Moderator", password_hash=demo_password, role=ROLE_ADMIN)
     user1 = User(email="alice@campus.edu", full_name="Alice Rahman (Club Lead)", password_hash=demo_password, role=ROLE_USER)
     user2 = User(email="bob@campus.edu", full_name="Bob Hasan (Event Editor)", password_hash=demo_password, role=ROLE_USER)
