@@ -85,16 +85,24 @@ def test_signup_and_login_flow(client: TestClient):
 
 
 def test_expired_and_tampered_token_rejected(client: TestClient, session: Session):
+    from datetime import datetime, timezone
+    from jose import jwt
+
     user = _create_user(session, "alice@campus.edu", "Campus@2026")
-    expired_token = create_access_token(
-        user_id=user.id,
-        role=user.role,
-        expires_delta=timedelta(seconds=-10),
-    )
+    now = datetime.now(timezone.utc)
+    expired_payload = {
+        "sub": str(user.id),
+        "role": user.role,
+        "iat": int((now - timedelta(minutes=20)).timestamp()),
+        "exp": int((now - timedelta(minutes=5)).timestamp()),
+    }
+    expired_token = jwt.encode(expired_payload, os.environ["JWT_SECRET"], algorithm="HS256")
+
     res_expired = client.get("/api/auth/me", headers={"Authorization": f"Bearer {expired_token}"})
     assert res_expired.status_code == 401
 
-    res_tampered = client.get("/api/auth/me", headers={"Authorization": f"Bearer {expired_token}tampered"})
+    valid_token = create_access_token(user_id=user.id, role=user.role)
+    res_tampered = client.get("/api/auth/me", headers={"Authorization": f"Bearer {valid_token}tampered"})
     assert res_tampered.status_code == 401
 
 
